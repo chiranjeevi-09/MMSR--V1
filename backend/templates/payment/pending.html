@@ -1,0 +1,51 @@
+{% extends "payment/payment_base.html" %}
+
+{% block content %}
+<div class="mb-6">
+    <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+        <i class="fas fa-circle-notch fa-spin text-4xl text-[#0077b6]"></i>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-900 mb-2">Processing Payment</h1>
+    <p class="text-gray-500 text-sm">Please wait while we confirm your payment with the bank.</p>
+</div>
+
+<div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-xl text-left mb-6">
+    <div class="flex items-start">
+        <div class="flex-shrink-0">
+            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+        </div>
+        <div class="ml-3">
+            <p class="text-sm text-yellow-700 font-medium">
+                Do not refresh or press the back button on this page. Doing so may cause your payment to fail or be charged twice.
+            </p>
+        </div>
+    </div>
+</div>
+
+{% if order %}
+<div class="bg-gray-50 rounded-xl p-4 text-center border border-gray-100 mb-2">
+    <span class="text-xs text-gray-500 font-medium uppercase tracking-wider block mb-1">Order Reference</span>
+    <span class="text-sm font-bold text-gray-900">#{{ order.id }}</span>
+</div>
+{% endif %}
+
+<div class="mt-8 text-center">
+    <p class="text-xs text-gray-400">If this page does not redirect within 60 seconds, please <a href="{{ frontend_url|default:'/contact' }}" id="contact-link" class="text-[#0077b6] underline">contact support</a>.</p>
+</div>
+
+<script>
+    (function() {
+        var frontendUrl = "{{ frontend_url|default:'' }}";
+        if (!frontendUrl) {
+            if (document.referrer && document.referrer.indexOf('http') === 0) {
+                try { frontendUrl = new URL(document.referrer).origin; } catch(e) {}
+            }
+            if (!frontendUrl) frontendUrl = window.location.origin;
+        }
+        var contactLink = document.getElementById('contact-link');
+        if (contactLink && frontendUrl && !contactLink.getAttribute('href').startsWith('http')) {
+            contactLink.href = frontendUrl.replace(/\/$/, '') + '/contact';
+        }
+    })();
+</script>
+{% endblock %}

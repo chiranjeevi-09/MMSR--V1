@@ -1,0 +1,341 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static jazzmin %}
+{% get_jazzmin_ui_tweaks as jazzmin_ui %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block content_title %} {% trans 'Dashboard' %} {% endblock %}
+
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a></li>
+    <li class="breadcrumb-item">{% trans 'Dashboard' %}</li>
+</ol>
+{% endblock %}
+
+
+{% block content %}
+<style>
+    /* Filter Bar Styling - Matching Dashboard Look */
+    .activity-filter-bar {
+        background: #f4f6f9;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        border: 1px solid #dee2e6;
+    }
+
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+    }
+
+    .filter-label {
+        font-weight: 600;
+        color: #555;
+    }
+
+    .select-premium {
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: 1px solid #ced4da;
+        font-size: 13px;
+        color: #495057;
+        background: white;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .select-premium:focus {
+        border-color: #417e8b;
+        box-shadow: 0 0 0 3px rgba(65, 126, 139, 0.1);
+    }
+
+    /* RESTORED PREVIOUS FORMAT STYLES */
+    .recent-activities-container {
+        width: 100%;
+    }
+
+    .activity-card {
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+    }
+
+    .activity-icon {
+        font-size: 24px;
+        margin-right: 20px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50% !important;
+        /* Kept as circles as requested */
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .activity-content {
+        flex-grow: 1;
+        overflow: hidden;
+    }
+
+    .activity-header {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        display: block;
+    }
+
+    .activity-header a {
+        color: #333;
+        text-decoration: none;
+    }
+
+    .activity-header a:hover {
+        color: #007bff;
+    }
+
+    .activity-time {
+        font-size: 13px;
+        color: #888;
+        float: right;
+        margin-top: 5px;
+    }
+
+    .activity-model {
+        font-size: 13px;
+        color: #666;
+        margin-top: 5px;
+        display: inline-block;
+        background: #f4f6f9;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    .activity-msg {
+        margin-top: 5px;
+        font-size: 14px;
+        color: #555;
+    }
+</style>
+
+<div class="col-12 recent-activities-container">
+    <div id="content-related" style="width: 100%;">
+        <div class="module" id="recent-actions-module">
+            <h4 class="mb-3" style="font-weight: 600;">{% trans 'Recent Activities' %}</h4>
+
+            <!-- Filter Controls -->
+            <div class="activity-filter-bar">
+                <div class="filter-group">
+                    <span class="filter-label">Select Action:</span>
+                    <select id="actionFilter" class="select-premium">
+                        <option value="all">All Actions</option>
+                        <option value="addition">Added</option>
+                        <option value="change">Edited</option>
+                        <option value="deletion">Removed</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">Select Day:</span>
+                    <select id="timeFilter" class="select-premium">
+                        <option value="all">Any Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="year">This Year</option>
+                    </select>
+                </div>
+
+
+                <div class="filter-group">
+                    <span class="filter-label">Select Date:</span>
+                    <input type="date" id="dateSelect" class="select-premium">
+                </div>
+
+                <div class="filter-group ml-auto">
+                    <button id="resetFilters" class="btn btn-sm btn-link text-muted"
+                        style="font-size: 11px;">Reset</button>
+                </div>
+            </div>
+
+            {% load log %}
+            {% get_admin_log 100 as admin_log for_user user %}
+            {% if not admin_log %}
+            <p class="text-muted">{% trans 'No recent activity.' %}</p>
+            {% else %}
+            <div class="activity-list" id="activityList">
+                {% for entry in admin_log %}
+                <div class="activity-card"
+                    data-action="{% if entry.is_addition %}addition{% elif entry.is_change %}change{% else %}deletion{% endif %}"
+                    data-date="{{ entry.action_time|date:'Y-m-d' }}" data-timestamp="{{ entry.action_time|date:'U' }}">
+
+                    {% if entry.is_change %}
+                    <div class="activity-icon bg-secondary"><i class="fas fa-edit"></i></div>
+                    {% elif entry.is_deletion %}
+                    <div class="activity-icon bg-danger"><i class="fas fa-trash"></i></div>
+                    {% elif entry.is_addition %}
+                    <div class="activity-icon bg-success"><i class="fas fa-plus"></i></div>
+                    {% endif %}
+
+                    <div class="activity-content">
+                        <span class="activity-time"><i class="fas fa-clock"></i> {{ entry.action_time|timesince }}
+                            ago</span>
+
+                        <h3 class="activity-header">
+                            {% if entry.is_deletion or not entry.get_admin_url %}
+                            {{ entry.object_repr }}
+                            {% else %}
+                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                            {% endif %}
+                        </h3>
+
+                        {% if entry.model %}
+                        <div class="activity-model">
+                            {% filter capfirst %}{{ entry.model }}{% endfilter %}
+                        </div>
+                        {% endif %}
+
+                        <div class="activity-msg mt-2">
+                            {% if entry.is_addition %}
+                            <p class="mb-1" style="color:#28a745;"><i class="fas fa-asterisk"></i>
+                                <strong>Action:</strong> A new {{ entry.content_type.name|default:"record" }} was added
+                                to the database.
+                            </p>
+                            {% elif entry.is_change %}
+                            <p class="mb-1" style="color:#17a2b8;"><i class="fas fa-pen"></i> <strong>Action:</strong>
+                                {% if entry.get_change_message %}
+                                {{ entry.get_change_message }}
+                                {% else %}
+                                General modifications made to this record.
+                                {% endif %}
+                            </p>
+                            {% elif entry.is_deletion %}
+                            <p class="mb-1" style="color:#dc3545;"><i class="fas fa-times"></i> <strong>Action:</strong>
+                                The {{ entry.content_type.name|default:"record" }} was permanently deleted.</p>
+                            {% endif %}
+
+                            {% if not entry.is_deletion and entry.get_admin_url %}
+                            <a href="{{ entry.get_admin_url }}" class="btn btn-sm btn-outline-secondary mt-2"
+                                style="font-size: 12px; padding: 3px 10px; border-radius: 4px;">
+                                <i class="fas fa-search-plus"></i> View Full Record Details
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div id="noResults" class="text-center py-4 d-none">
+                <p class="text-muted">No activities found matching these filters.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const actionFilter = document.getElementById('actionFilter');
+        const timeFilter = document.getElementById('timeFilter');
+        const dateSelect = document.getElementById('dateSelect');
+        const resetBtn = document.getElementById('resetFilters');
+        const cards = document.querySelectorAll('.activity-card');
+        const noResults = document.getElementById('noResults');
+
+        function applyFilters() {
+            const action = actionFilter.value;
+            const time = timeFilter.value;
+            const selectedDate = dateSelect.value;
+
+            let visibleCount = 0;
+            const now = Math.floor(Date.now() / 1000);
+            const dayInSec = 86400;
+
+            cards.forEach(card => {
+                let showAction = (action === 'all' || card.dataset.action === action);
+                let showTime = true;
+
+                const cardTs = parseInt(card.dataset.timestamp);
+                const cardDate = card.dataset.date;
+
+                if (selectedDate) {
+                    // If a specific date is chosen, it overrides the "Time Range" filter
+                    showTime = (cardDate === selectedDate);
+                    timeFilter.value = 'all';
+                } else if (time !== 'all') {
+                    if (time === 'today') {
+                        showTime = (now - cardTs < dayInSec);
+                    } else if (time === 'week') {
+                        showTime = (now - cardTs < dayInSec * 7);
+                    } else if (time === 'month') {
+                        showTime = (now - cardTs < dayInSec * 30);
+                    } else if (time === 'year') {
+                        showTime = (now - cardTs < dayInSec * 365);
+                    }
+                }
+
+                if (showAction && showTime) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            noResults.classList.toggle('d-none', visibleCount > 0);
+        }
+
+        actionFilter.addEventListener('change', applyFilters);
+        timeFilter.addEventListener('change', function () {
+            dateSelect.value = ''; // Reset date picker if range selected
+            applyFilters();
+        });
+        dateSelect.addEventListener('change', applyFilters);
+
+        resetBtn.addEventListener('click', function () {
+            actionFilter.value = 'all';
+            timeFilter.value = 'all';
+            dateSelect.value = '';
+            applyFilters();
+        });
+
+        // Sidebar Persistence Logic
+        const body = document.querySelector('body');
+        const pushMenuBtn = document.querySelector('[data-widget="pushmenu"]');
+
+        if (localStorage.getItem('sidebar-collapsed') === 'true') {
+            body.classList.add('sidebar-collapse');
+        } else {
+            body.classList.remove('sidebar-collapse');
+        }
+
+        if (pushMenuBtn) {
+            pushMenuBtn.addEventListener('click', function() {
+                setTimeout(() => {
+                    const isCollapsed = body.classList.contains('sidebar-collapse');
+                    localStorage.setItem('sidebar-collapsed', isCollapsed);
+                }, 100);
+            });
+        }
+    });
+</script>
+{% endblock %}

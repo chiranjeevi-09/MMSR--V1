@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title|default:"Payment | MMSR Publications" }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col font-sans">
+    
+    <!-- Mimic Navbar -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex items-center">
+                    <!-- Logo / Brand -->
+                    <a id="nav-brand-link" href="{{ frontend_url|default:'/' }}" class="text-2xl font-bold text-[#0077b6]">
+                        MMSR <span class="text-[#111827]">Publications</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a id="nav-dashboard-link" href="{{ frontend_url|default:'/dashboard' }}" class="text-gray-600 hover:text-[#0077b6] font-medium text-sm">Dashboard</a>
+                    <a id="nav-support-link" href="{{ frontend_url|default:'/contact' }}" class="text-gray-600 hover:text-[#0077b6] font-medium text-sm">Support</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-sm border border-gray-100 text-center">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- Mimic Footer -->
+    <footer class="bg-[#111827] py-8 text-center text-gray-400 text-sm">
+        <p>&copy; 2026 MMSR Publications. All rights reserved.</p>
+    </footer>
+
+    <script>
+    (function() {
+        var frontendUrl = "{{ frontend_url }}";
+        if (!frontendUrl && document.referrer) {
+            try {
+                var refUrl = new URL(document.referrer);
+                frontendUrl = refUrl.origin;
+            } catch(e) {}
+        }
+        if (!frontendUrl) {
+            if (window.location.port === '8000') {
+                frontendUrl = window.location.protocol + '//' + window.location.hostname + ':3000';
+            } else {
+                frontendUrl = window.location.origin;
+            }
+        }
+        frontendUrl = frontendUrl.replace(/\/$/, '');
+
+        var brandLink = document.getElementById('nav-brand-link');
+        if (brandLink) brandLink.href = frontendUrl + '/';
+
+        var dashLink = document.getElementById('nav-dashboard-link');
+        if (dashLink) dashLink.href = frontendUrl + '/dashboard';
+
+        var suppLink = document.getElementById('nav-support-link');
+        if (suppLink) suppLink.href = frontendUrl + '/contact';
+    })();
+    </script>
+
+</body>
+</html>

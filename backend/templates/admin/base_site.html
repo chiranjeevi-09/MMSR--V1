@@ -1,0 +1,73 @@
+{% extends "admin/base.html" %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* ==========================================
+       GLOBAL TRUNCATION CSS FIX (CACHE-BUSTED)
+       ========================================== */
+    
+    /* Ensure the table itself can compress */
+    #result_list {
+        width: 100% !important;
+        table-layout: fixed !important;
+    }
+
+    /* Keep checkbox column small */
+    #result_list th.action-checkbox-column {
+        width: 50px !important;
+    }
+
+    /* Apply strict max-width and truncation to all cells */
+    #result_list td,
+    #result_list th {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 200px !important;
+    }
+
+    /* CRITICAL: Force inner links and text to obey the parent width */
+    #result_list td *,
+    #result_list th * {
+        max-width: 100% !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        display: inline-block !important;
+        vertical-align: bottom !important;
+    }
+
+    /* Fix Alerts / Notifications */
+    .alert,
+    .alert .message,
+    .alert span,
+    .toast-message {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 100% !important;
+        display: block !important;
+    }
+
+    /* Force links in alerts to be fully white and without link style (no underline or color change) */
+    .alert a,
+    .alert a:hover,
+    .alert a:visited,
+    .alert a:active {
+        color: #ffffff !important;
+        text-decoration: none !important;
+    }
+
+    /* Global Fix for Select / Dropdown fields overflowing forms */
+    select,
+    .select2-container,
+    .select2-container--default,
+    .select2-selection,
+    select.form-control {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+</style>
+{% endblock %}
+

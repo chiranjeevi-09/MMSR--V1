@@ -1,0 +1,467 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Brand Theme Colors — Antique Paper + Royal Gold Editorial Theme */
+    --navy-midnight: #F8EEDC;
+    --royal-gold: #C99A2E;
+    --gold-hover: #B8860B;
+    --ivory-white: #5C4033;
+    --soft-gray: #F1DFC3;
+
+    /* Accent Colors */
+    --royal-blue: #C99A2E;
+    --emerald-accent: #16A34A;
+    --orange-accent: #EA580C;
+    --ruby-red: #DC2626;
+
+    /* Surface Colors */
+    --surface-dark-1: #F1DFC3;
+    --surface-dark-2: #FFF9F1;
+    --surface-light: #F8EEDC;
+
+    /* Semantic Tokens (Antique Paper + Royal Gold Theme) */
+    --primary: #8C6239;
+    --primary-foreground: #FFF9F1;
+    --secondary: #F1DFC3;
+    --secondary-foreground: #5C4033;
+    --accent: #C99A2E;
+    --accent-foreground: #FFF9F1;
+    --background: #F8EEDC;
+    --surface: #FFF9F1;
+    --surface-dark: #F1DFC3;
+    --surface-card: #FFF9F1;
+    --border: #D4AC54;
+    --border-gold: #D4AC54;
+    --text-main: #5C4028;
+    --text-muted: #6B5338;
+    --text-gold: #8C6212;
+    --success: #16A34A;
+    --warning: #EA580C;
+    --danger: #DC2626;
+
+    /* Fonts (self-hosted via @fontsource-variable — see app/layout.tsx) */
+    --font-playfair: 'Playfair Display Variable', 'Georgia', serif;
+    --font-manrope: 'Manrope Variable', 'Segoe UI', sans-serif;
+    --font-inter: 'Inter Variable', 'Segoe UI', sans-serif;
+
+    /* Spacing Scale (8-point grid) */
+    --space-4: 4px;
+    --space-8: 8px;
+    --space-12: 12px;
+    --space-16: 16px;
+    --space-20: 20px;
+    --space-24: 24px;
+    --space-32: 32px;
+    --space-40: 40px;
+    --space-48: 48px;
+    --space-56: 56px;
+    --space-64: 64px;
+    --space-72: 72px;
+    --space-96: 96px;
+    --space-120: 120px;
+
+    /* Border Radius Tokens */
+    --radius-button: 8px;
+    --radius-input: 8px;
+    --radius-card: 24px;
+    --radius-modal: 20px;
+    --radius-hero-image: 24px;
+    --radius-pill: 9999px;
+    --radius-avatar: 50%;
+
+    /* Shadow Tokens */
+    --shadow-soft: 0 10px 30px rgba(140, 98, 57, 0.08);
+    --shadow-medium: 0 16px 40px rgba(201, 154, 46, 0.14);
+    --shadow-large: 0 20px 48px rgba(92, 64, 51, 0.16);
+    --shadow-gold-glow: 0 0 25px -5px rgba(201, 154, 46, 0.35);
+    --shadow-blue-glow: 0 0 25px -5px rgba(201, 154, 46, 0.35);
+    --shadow-glass: 0 8px 32px 0 rgba(140, 98, 57, 0.08);
+
+    /* Typography Scale */
+    --text-hero-h1: clamp(2.5rem, 5vw, 4.5rem);
+    --text-page-h1: clamp(2rem, 3.5vw, 3rem);
+    --text-section-h2: clamp(1.5rem, 2.5vw, 2.25rem);
+    --text-subheading: 1.25rem;
+    --text-body-large: 1.125rem;
+    --text-body-normal: 1rem;
+    --text-caption: 0.875rem;
+
+    /* Focus Ring Variables */
+    --ring-color: #C99A2E;
+    --ring-offset-color: #F8EEDC;
+    --ring-offset-width: 2px;
+  }
+
+  [data-theme="light"] {
+    --background: #F8EEDC;
+    --surface: #FFF9F1;
+    --surface-dark: #F1DFC3;
+    --surface-card: #FFF9F1;
+    --border: #D4AC54;
+    --text-main: #6E5238;
+    --text-muted: #8A6A4A;
+    --ring-offset-color: #F8EEDC;
+  }
+}
+
+/* Global Reset & Foundation */
+html {
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #F8EEDC;
+  color: #6E5238;
+  font-family: var(--font-manrope);
+}
+
+body {
+  min-height: 100vh;
+  background-color: #F8EEDC;
+  color: #6E5238;
+  margin: 0;
+  padding: 0;
+  /* `clip` (not `hidden`) prevents horizontal overflow WITHOUT turning body
+     into a scroll container - `hidden` here was silently breaking every
+     `position: sticky` element (e.g. the admin header) inside the page. */
+  overflow-x: clip;
+}
+
+/* Force pointer cursor on all buttons and interactive elements across User and Admin side */
+button,
+a,
+select,
+summary,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+[role="button"],
+label[for] {
+  cursor: pointer !important;
+}
+
+/* Custom Global Beige/Gold Checkbox Styling */
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 1.5px solid #D4AC54 !important;
+  background-color: #FFF2D9 !important;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  transition: all 0.2s ease-in-out;
+}
+
+input[type="checkbox"]:hover {
+  border-color: #C99A2E !important;
+  box-shadow: 0 0 0 2px rgba(201, 154, 46, 0.15);
+}
+
+input[type="checkbox"]:checked {
+  background-color: #C99A2E !important;
+  border-color: #C99A2E !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-size: 80% 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+input[type="checkbox"]:focus-visible {
+  box-shadow: 0 0 0 2px rgba(201, 154, 46, 0.3);
+}
+
+/* Global Beige/Gold Select (Dropdown) Styling */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #FDF6EC;
+  color: #2F241A;
+  border: 2px solid #D4AC54;
+  border-radius: 0.75rem;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-family: var(--font-manrope);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23C99A2E' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 14px 14px;
+  width: 100%;
+}
+
+select:hover {
+  border-color: #C99A2E;
+  background-color: #FAF0E0;
+}
+
+select:focus {
+  border-color: #C99A2E;
+  box-shadow: 0 0 0 2px rgba(201, 154, 46, 0.2);
+  background-color: #FDF6EC;
+}
+
+select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #F5EDDB !important;
+}
+
+select option {
+  background-color: #FDF6EC;
+  color: #2F241A;
+}
+
+/* Selection Color Styling */
+::selection {
+  background-color: rgba(201, 154, 46, 0.25);
+  color: #C99A2E;
+}
+
+::-moz-selection {
+  background-color: rgba(201, 154, 46, 0.25);
+  color: #C99A2E;
+}
+
+/* Modern Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F8EEDC;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(201, 154, 46, 0.35);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #C99A2E;
+}
+
+/* Accessibility Focus Ring Foundation */
+:focus-visible {
+  outline: 2px solid #C99A2E;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Glass & Gradient Utility Classes */
+.glass-panel {
+  background: rgba(255, 249, 241, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid #D4AC54;
+  box-shadow: 0 10px 30px rgba(140, 98, 57, 0.08);
+}
+
+.glass-card, .card-paper {
+  background: #FFF9F1;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid #D4AC54;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(140, 98, 57, 0.08), 0 4px 12px rgba(201, 154, 46, 0.06);
+  transition: all 300ms ease;
+}
+
+.glass-card:hover, .card-paper:hover {
+  border-color: #D6B36B;
+  background: #FFF8EE;
+  box-shadow: 0 16px 40px rgba(201, 154, 46, 0.14), 0 8px 18px rgba(140, 98, 57, 0.10);
+  transform: translateY(-3px);
+}
+
+.gradient-gold-text {
+  background: linear-gradient(135deg, #C99A2E 0%, #B8860B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-gold {
+  background: linear-gradient(135deg, #C99A2E 0%, #B8860B 100%);
+}
+
+.gradient-midnight {
+  background: linear-gradient(135deg, #F8EEDC 0%, #F1DFC3 100%);
+}
+
+.gradient-hero {
+  background: linear-gradient(180deg, #F8EEDC 0%, #F1DFC3 50%, #EAD3B0 100%);
+}
+
+.gradient-royal-blue {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+}
+
+/* CSS Keyframes Foundation */
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Gold glow pulse. Animates opacity instead of box-shadow: an animated
+   box-shadow repaints on every frame (the Lighthouse report's "expensive
+   repeated visual calculation" / gold-glow finding), whereas opacity is
+   composited on the GPU. The static glow is still available via the
+   `shadow-gold-glow` utility where a non-animated glow is wanted. */
+@keyframes goldGlow {
+  0%, 100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Animation Utility Classes */
+.fade-up, .animate-fade-up {
+  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.fade-in, .animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+.scale-in, .animate-scale-in {
+  animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide-up, .animate-slide-up {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.gold-glow, .animate-gold-glow {
+  animation: goldGlow 2.5s infinite ease-in-out;
+}
+
+.shimmer, .animate-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+.float, .animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Reduced Motion Accessibility Support */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .fade-up, .fade-in, .scale-in, .slide-up, .gold-glow, .shimmer, .float {
+    animation: none !important;
+  }
+}
+
+/* Admin CMS: numeric fields are type-to-enter only - hide the native stepper
+   arrows so the scroll/arrow "increase or decrease" affordance is gone. */
+.admin-portal input[type="number"]::-webkit-outer-spin-button,
+.admin-portal input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.admin-portal input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Admin overlays (drawers / modal backdrops) are rendered as children of
+   content wrappers that use Tailwind's `space-y-*`. That utility applies a
+   margin-bottom to every non-last child, and a fixed element stretched with
+   `inset-0` (or top-0 + bottom-0) resolves its height AS `viewport - margin`,
+   which leaves an uncovered strip at the bottom of the screen where the page
+   behind shows through. Fixed overlays never need flow margins, so reset them. */
+.admin-portal .fixed {
+  margin: 0 !important;
+}
+
+/* Respect the visitor's OS-level "reduce motion" preference for CSS-driven
+   animations (Tailwind `animate-*`, keyframe transitions). framer-motion is
+   handled separately via <MotionConfig reducedMotion="user">. Opacity fades
+   are effectively instant here; this is the accepted accessibility trade-off. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

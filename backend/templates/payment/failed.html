@@ -1,0 +1,71 @@
+{% extends "payment/payment_base.html" %}
+
+{% block content %}
+<div class="mb-6">
+    <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fas fa-times-circle text-4xl text-red-500"></i>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-900 mb-2">Payment Failed</h1>
+    <p class="text-gray-500 text-sm">We're sorry, but your payment could not be processed at this time.</p>
+</div>
+
+<div class="bg-gray-50 rounded-xl p-6 text-left mb-8 border border-red-100 shadow-inner">
+    {% if order %}
+    <div class="flex justify-between items-center mb-3">
+        <span class="text-sm text-gray-500 font-medium uppercase tracking-wider">Order ID</span>
+        <span class="text-sm font-bold text-gray-900">{{ order.custom_order_id|default:order.id }}</span>
+    </div>
+    <div class="h-px bg-gray-200 w-full my-3"></div>
+    {% endif %}
+    
+    <div class="mb-1">
+        <span class="text-sm text-red-400 font-medium uppercase tracking-wider block mb-1">Reason for Failure</span>
+        <p class="text-sm font-semibold text-red-600">{{ reason }}</p>
+    </div>
+
+    {% if order.refund_status == 'pending' %}
+    <div class="h-px bg-gray-200 w-full my-3"></div>
+    <div class="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-center">
+        <span class="text-xs text-amber-800 font-bold uppercase tracking-wider block mb-1">⚠️ Refund Notice</span>
+        <p class="text-xs font-semibold text-amber-700">If any amount was deducted accidentally, a refund has been automatically initiated. Your amount will be refunded within 5-7 business days.</p>
+    </div>
+    {% endif %}
+</div>
+
+<div class="space-y-3">
+    <a id="retry-payment-btn" href="{{ frontend_url|default:'/checkout' }}" 
+       class="w-full inline-flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent shadow-sm text-sm font-bold rounded-xl text-white bg-[#0077b6] hover:bg-[#111827] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0077b6]">
+        <i class="fas fa-redo-alt"></i> Retry Payment
+    </a>
+    <a id="go-to-orders-btn" href="{{ frontend_url|default:'/dashboard/orders' }}" 
+       class="w-full inline-flex justify-center items-center gap-2 py-3.5 px-4 border border-gray-300 shadow-sm text-sm font-bold rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+        <i class="fas fa-box-open"></i> Go to Orders
+    </a>
+</div>
+
+<script>
+(function() {
+    var frontendUrl = "{{ frontend_url }}";
+    if (!frontendUrl && document.referrer) {
+        try {
+            var refUrl = new URL(document.referrer);
+            frontendUrl = refUrl.origin;
+        } catch(e) {}
+    }
+    if (!frontendUrl) {
+        if (window.location.port === '8000') {
+            frontendUrl = window.location.protocol + '//' + window.location.hostname + ':3000';
+        } else {
+            frontendUrl = window.location.origin;
+        }
+    }
+    frontendUrl = frontendUrl.replace(/\/$/, '');
+
+    var retryBtn = document.getElementById('retry-payment-btn');
+    if (retryBtn) retryBtn.href = frontendUrl + '/checkout';
+
+    var ordersBtn = document.getElementById('go-to-orders-btn');
+    if (ordersBtn) ordersBtn.href = frontendUrl + '/dashboard/orders';
+})();
+</script>
+{% endblock %}

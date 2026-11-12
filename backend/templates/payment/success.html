@@ -1,0 +1,94 @@
+{% extends "payment/payment_base.html" %}
+
+{% block content %}
+<div class="mb-6">
+    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fas fa-check-circle text-4xl text-green-500"></i>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h1>
+    <p class="text-gray-500 text-sm">Thank you for your purchase. Your transaction has been completed successfully.</p>
+</div>
+
+{% if order %}
+<div class="bg-gray-50 rounded-xl p-6 text-left mb-8 border border-gray-100 shadow-inner space-y-3">
+    <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+        <span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Order ID</span>
+        <span class="text-sm font-bold text-gray-900">{{ order.custom_order_id|default:order.id }}</span>
+    </div>
+    
+    <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+        <span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Transaction ID</span>
+        <span class="text-sm font-bold text-gray-700 font-mono">{{ order.razorpay_payment_id|default:order.transaction_id|default:"N/A" }}</span>
+    </div>
+    
+    <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+        <span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Payment Method</span>
+        <span class="text-sm font-bold text-gray-900">{% if order.payment_method == "upi" %}UPI (QR Code){% else %}Credit / Debit Card{% endif %}</span>
+    </div>
+
+    <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+        <span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Date & Time</span>
+        <span class="text-sm font-bold text-gray-900">{{ order.updated_at|date:"d M Y, h:i A" }}</span>
+    </div>
+
+    <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+        <span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Customer</span>
+        <span class="text-sm font-bold text-gray-900">{{ order.full_name }}</span>
+    </div>
+
+    <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+        <span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Email</span>
+        <span class="text-sm font-bold text-gray-900">{{ order.email }}</span>
+    </div>
+    
+    {% if items %}
+    <div class="pb-2 border-b border-gray-200">
+        <span class="text-xs text-gray-500 font-medium uppercase tracking-wider block mb-1">Items</span>
+        <ul class="text-xs font-semibold text-gray-900 space-y-1 pl-4 list-disc marker:text-[#0077b6]">
+            {% for item in items %}
+                <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="flex justify-between items-center pt-2">
+        <span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Amount Paid</span>
+        <span class="text-lg font-bold text-[#0077b6]">₹{{ order.total_amount }}</span>
+    </div>
+</div>
+{% endif %}
+
+<a id="go-to-orders-btn" href="{{ frontend_url|default:'/dashboard/orders/' }}{{ order.id }}" 
+   class="w-full inline-flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent shadow-sm text-sm font-bold rounded-xl text-white bg-[#0077b6] hover:bg-[#111827] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0077b6]">
+    <i class="fas fa-box-open"></i> Go to Orders
+</a>
+
+<script>
+(function() {
+    var frontendUrl = "{{ frontend_url }}";
+    if (!frontendUrl && document.referrer) {
+        try {
+            var refUrl = new URL(document.referrer);
+            frontendUrl = refUrl.origin;
+        } catch(e) {}
+    }
+    if (!frontendUrl) {
+        if (window.location.port === '8000') {
+            frontendUrl = window.location.protocol + '//' + window.location.hostname + ':3000';
+        } else {
+            frontendUrl = window.location.origin;
+        }
+    }
+    frontendUrl = frontendUrl.replace(/\/$/, '');
+
+    var targetUrl = frontendUrl + '/dashboard/orders/{{ order.id }}';
+    var btn = document.getElementById('go-to-orders-btn');
+    if (btn) btn.href = targetUrl;
+
+    setTimeout(function () {
+        window.location.href = targetUrl;
+    }, 3000);
+})();
+</script>
+{% endblock %}

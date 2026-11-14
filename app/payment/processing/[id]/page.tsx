@@ -188,6 +188,32 @@ export default function PaymentProcessingPage() {
     rzp.open();
   }, [buildRazorpayOptions, orderIdParam, router, tokens?.access]);
 
+  const handleSimulatePayment = async () => {
+    if (!tokens?.access || !orderIdParam) return;
+    setStage('verifying_payment');
+    setErrorMessage(null);
+    try {
+      const res = await fetch(`${apiBase()}/api/commerce/${orderIdParam}/simulate_payment/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${tokens.access}`,
+        },
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to simulate test payment.');
+      }
+      clearCart();
+      setStage('success');
+      router.push(`/payment/success/${orderIdParam}?simulated=true`);
+    } catch (err: any) {
+      setStage('failed');
+      setErrorKind('verify');
+      setErrorMessage(err?.message || 'Failed to complete test payment simulation.');
+    }
+  };
+
   const startPaymentFlow = useCallback(async () => {
     // Wait for the auth session to hydrate before deciding anything.
     if (isLoading) return;
@@ -384,6 +410,20 @@ export default function PaymentProcessingPage() {
             })}
           </div>
 
+          {stage === 'waiting_payment' && (
+            <div className="pt-1">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleSimulatePayment}
+                className="text-xs border-[#C9962A] text-[#C9962A] hover:bg-[#C9962A]/10"
+              >
+                ⚡ Instant Test Mode: Complete Payment & Grant Subscription
+              </Button>
+            </div>
+          )}
+
           {/* Stuck-loading watchdog (only if init lingers on 'initializing') */}
           {stage === 'initializing' && slowLoad && (
             <div className="p-4 rounded-xl bg-[#FDECEC] border border-[#DC2626]/35 text-left space-y-3">
@@ -422,9 +462,14 @@ export default function PaymentProcessingPage() {
                   </Link>
                 ) : (
                   errorKind !== 'notfound' && (
-                    <Button type="button" variant="gold" size="sm" onClick={startPaymentFlow}>
-                      Retry Payment
-                    </Button>
+                    <>
+                      <Button type="button" variant="gold" size="sm" onClick={startPaymentFlow}>
+                        Retry Payment
+                      </Button>
+                      <Button type="button" variant="outline" size="sm" onClick={handleSimulatePayment} className="border-emerald-600 text-emerald-400 hover:bg-emerald-600/10">
+                        ⚡ Complete in Test Mode
+                      </Button>
+                    </>
                   )
                 )}
                 {errorKind !== 'notfound' && (

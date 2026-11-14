@@ -25,13 +25,16 @@ export const Modal: React.FC<ModalProps> = ({
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const titleId = `${useId()}-title`;
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
 
     // Remember what was focused before the dialog opened so we can hand focus
     // back on close (WCAG 2.1.2 focus-restoration).
-    const previouslyFocused = document.activeElement as HTMLElement | null;
+    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
 
     const getFocusable = (): HTMLElement[] => {
       if (!modalRef.current) return [];
@@ -50,7 +53,7 @@ export const Modal: React.FC<ModalProps> = ({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
+        onCloseRef.current();
         return;
       }
       // Trap Tab within the dialog so keyboard users cannot wander into the
@@ -82,9 +85,9 @@ export const Modal: React.FC<ModalProps> = ({
       document.body.style.overflow = 'unset';
       window.removeEventListener('keydown', handleKeyDown);
       // Restore focus to the trigger element after closing.
-      previouslyFocused?.focus?.();
+      previouslyFocusedRef.current?.focus?.();
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
